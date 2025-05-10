@@ -2,7 +2,7 @@ import React from 'react';
 
 const LineProgressBar = ({ label, percentage, lineColor }) => {
   return (
-    <div className="container">
+    <div className="w-100 px-0 p-2">
       <div className="d-flex justify-content-between align-items-center mb-2">
         <span>{label}</span>
         <span>{percentage}%</span>
@@ -24,5 +24,6 @@ const LineProgressBar = ({ label, percentage, lineColor }) => {
     </div>
   );
 };
+
 
 export default LineProgressBar;

@@ -1,8 +1,5 @@
-// LoginPage.js
-import { useCallback, useEffect, useState } from "react";
-import { Container, Row, Col, Form, Button } from "react-bootstrap";
-import Particles from "react-tsparticles";
-import { loadFull } from "tsparticles";
+import { useEffect, useState } from "react";
+import { Container, Row, Col, Form, Button, Card } from "react-bootstrap";
 import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
 import { Link, useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
@@ -12,7 +9,6 @@ import { loginAPI } from "../../utils/ApiRequest";
 
 const Login = () => {
   const navigate = useNavigate();
-
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -21,19 +17,11 @@ const Login = () => {
     }
   }, [navigate]);
 
-  const [values, setValues] = useState({
-    email: "",
-    password: "",
-  });
+  const [values, setValues] = useState({ email: "", password: "" });
 
   const toastOptions = {
     position: "bottom-right",
     autoClose: 2000,
-    hideProgressBar: false,
-    closeOnClick: true,
-    pauseOnHover: false,
-    draggable: true,
-    progress: undefined,
     theme: "dark",
   };
 
@@ -43,175 +31,95 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     const { email, password } = values;
-
     setLoading(true);
-
-    const { data } = await axios.post(loginAPI, {
-      email,
-      password,
-    });
-
-    if (data.success === true) {
-      localStorage.setItem("user", JSON.stringify(data.user));
-      navigate("/");
-      toast.success(data.message, toastOptions);
-      setLoading(false);
-    } else {
-      toast.error(data.message, toastOptions);
+    try {
+      const { data } = await axios.post(loginAPI, { email, password });
+      if (data.success) {
+        localStorage.setItem("user", JSON.stringify(data.user));
+        navigate("/");
+        toast.success(data.message, toastOptions);
+      } else {
+        toast.error(data.message, toastOptions);
+      }
+    } catch (err) {
+      toast.error("Something went wrong!", toastOptions);
+    } finally {
       setLoading(false);
     }
   };
 
-  const particlesInit = useCallback(async (engine) => {
-    // console.log(engine);
-    await loadFull(engine);
-  }, []);
-
-  const particlesLoaded = useCallback(async (container) => {
-    // await console.log(container);
-  }, []);
-
   return (
-    <div style={{ position: "relative", overflow: "hidden" }}>
-      <Particles
-        id="tsparticles"
-        init={particlesInit}
-        loaded={particlesLoaded}
-        options={{
-          background: {
-            color: {
-              value: "#000",
-            },
-          },
-          fpsLimit: 60,
-          particles: {
-            number: {
-              value: 200,
-              density: {
-                enable: true,
-                value_area: 800,
-              },
-            },
-            color: {
-              value: "#ffcc00",
-            },
-            shape: {
-              type: "circle",
-            },
-            opacity: {
-              value: 0.5,
-              random: true,
-            },
-            size: {
-              value: 3,
-              random: { enable: true, minimumValue: 1 },
-            },
-            links: {
-              enable: false,
-            },
-            move: {
-              enable: true,
-              speed: 2,
-            },
-            life: {
-              duration: {
-                sync: false,
-                value: 3,
-              },
-              count: 0,
-              delay: {
-                random: {
-                  enable: true,
-                  minimumValue: 0.5,
-                },
-                value: 1,
-              },
-            },
-          },
-          detectRetina: true,
-        }}
-        style={{
-          position: "absolute",
-          zIndex: -1,
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-        }}
-      />
-      <Container
-        className="mt-5"
-        style={{ position: "relative", zIndex: "2 !important" }}
-      >
-        <Row>
-          <Col md={{ span: 6, offset: 3 }}>
-            <h1 className="text-center mt-5">
-              <AccountBalanceWalletIcon
-                sx={{ fontSize: 40, color: "white" }}
-                className="text-center"
-              />
-            </h1>
-            <h2 className="text-white text-center ">Login</h2>
-            <Form>
-              <Form.Group controlId="formBasicEmail" className="mt-3">
-                <Form.Label className="text-white">Email address</Form.Label>
+<div
+  className="d-flex align-items-center justify-content-center vh-100"
+  style={{ backgroundColor: "#f1f3f6" }}
+>
+    <Row className="justify-content-center w-100">
+        <Card className="border-0 shadow-lg rounded-4">
+          <Card.Body className="p-5">
+            <div className="text-center mb-4">
+              <AccountBalanceWalletIcon sx={{ fontSize: 48, color: "#0d6efd" }} />
+              <h2 className="mt-3" style={{ fontWeight: "600" }}>
+                Welcome Back
+              </h2>
+              <p className="text-muted small">Login to your wallet account</p>
+            </div>
+
+            <Form onSubmit={handleSubmit}>
+              <Form.Group controlId="formBasicEmail" className="mb-3">
+                <Form.Label className="fw-semibold">Email address</Form.Label>
                 <Form.Control
                   type="email"
-                  placeholder="Enter email"
                   name="email"
+                  placeholder="Enter your email"
                   onChange={handleChange}
                   value={values.email}
+                  required
+                  className="py-2"
                 />
               </Form.Group>
 
-              <Form.Group controlId="formBasicPassword" className="mt-3">
-                <Form.Label className="text-white">Password</Form.Label>
+              <Form.Group controlId="formBasicPassword" className="mb-3">
+                <Form.Label className="fw-semibold">Password</Form.Label>
                 <Form.Control
                   type="password"
                   name="password"
-                  placeholder="Password"
+                  placeholder="Enter your password"
                   onChange={handleChange}
                   value={values.password}
+                  required
+                  className="py-2"
                 />
               </Form.Group>
-              <div
-                style={{
-                  width: "100%",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  flexDirection: "column",
-                }}
-                className="mt-4"
-              >
-                <Link to="/forgotPassword" className="text-white lnk">
+
+              <div className="text-end mb-3">
+                <Link to="/forgotPassword" className="text-decoration-none text-primary">
                   Forgot Password?
                 </Link>
-
-                <Button
-                  type="submit"
-                  className=" text-center mt-3 btnStyle"
-                  onClick={!loading ? handleSubmit : null}
-                  disabled={loading}
-                >
-                  {loading ? "Signin…" : "Login"}
-                </Button>
-
-                <p className="mt-3" style={{ color: "#9d9494" }}>
-                  Don't Have an Account?{" "}
-                  <Link to="/register" className="text-white lnk">
-                    Register
-                  </Link>
-                </p>
               </div>
+
+              <Button
+                variant="primary"
+                type="submit"
+                className="w-100 py-2 fw-bold"
+                disabled={loading}
+              >
+                {loading ? "Signing in..." : "Login"}
+              </Button>
             </Form>
-          </Col>
-        </Row>
-        <ToastContainer />
-      </Container>
-    </div>
+
+            <div className="text-center mt-4">
+              <span className="text-muted">Don't have an account?</span>{" "}
+              <Link to="/register" className="text-decoration-none fw-semibold text-primary">
+                Register
+              </Link>
+            </div>
+          </Card.Body>
+        </Card>
+    </Row>
+    <ToastContainer />
+</div>
+
   );
 };
 
